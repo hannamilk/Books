@@ -7,14 +7,67 @@ form.addEventListener('submit', addBook);
 booksList.addEventListener('click', deleteBook);
 document.addEventListener('DOMContentLoaded', getBooksFromLocalStorage);
 
+function getBooksFromLocalStorage(){
+    let books;
+    if(localStorage.getItem('books') === null){
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+    for(let i = 0; i < books.length; i++){
+        let book = books[i];
+        // create <tr> element
+        const tr = document.createElement('tr');
+        for(let i = 0; i < book.length; i++){
+            // create <td> element
+            let td = document.createElement('td');
+            // create text element
+            let text = document.createTextNode(book[i]);
+            // add text to <td>
+            td.appendChild(text);
+            // add td to tr
+            tr.appendChild(td);
+            tr.appendChild(td);
+        }
+        // X link
+        // create <td> element
+        td = document.createElement('td');
+        const link = document.createElement('a');
+        link.setAttribute('href', '#');
+        link.appendChild(document.createTextNode('X'));
+        td.appendChild(link);
+        tr.appendChild(td);
+        booksList.appendChild(tr);
+    }
+}
+
 
 function deleteBook(event){
     if(event.target.textContent === 'X'){
         if(confirm('Do you want to delete this book?')){
             event.target.parentElement.parentElement.remove();
+            let bookISBN = event.target.parentElement.previousElementSibling.textContent;
+            deleteBookFromLocalStorage(bookISBN);
         }
     }
 }
+
+function deleteBookFromLocalStorage(bookISBN){
+    let books;
+    if(localStorage.getItem('books') === null){
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+
+    books.forEach(function (book, index){
+        if(book[2] === bookISBN){
+            books.splice(index, 1);
+        }
+    });
+    localStorage.setItem('books', JSON.stringify(books));
+}
+
 
 function addBook(event){
     // get form input data
@@ -62,4 +115,16 @@ function addBook(event){
     authorInput.value = '';
     isbnInput.value = '';
     event.preventDefault();
+}
+
+
+function addBookToLocalStorage(book){
+    let books;
+    if(localStorage.getItem('books') === null){
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
 }
